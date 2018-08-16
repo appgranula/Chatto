@@ -225,7 +225,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.layoutIfNeeded()
     }
 
-    private func updateAvatarView(from viewModel: MessageViewModelProtocol,
+    open func updateAvatarView(from viewModel: MessageViewModelProtocol,
                                   with style: BaseMessageCollectionViewCellStyleProtocol) {
         self.avatarView.isHidden = !viewModel.decorationAttributes.isShowingAvatar
 
