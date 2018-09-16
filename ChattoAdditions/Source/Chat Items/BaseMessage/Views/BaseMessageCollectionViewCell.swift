@@ -238,7 +238,6 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     // MARK: layout
     open override func layoutSubviews() {
         super.layoutSubviews()
-
         let layout = self.calculateLayout(availableWidth: self.contentView.bounds.width)
         self.failedButton.bma_rect = layout.failedButtonFrame
         self.bubbleView.bma_rect = layout.bubbleViewFrame
@@ -246,7 +245,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
         self.bubbleView.layoutIfNeeded()
 
         self.avatarView.bma_rect = layout.avatarViewFrame
-        self.selectionIndicator.bma_rect = layout.selectionIndicatorFrame
+        self.avatarView.layer.cornerRadius = self.avatarView.layer.frame.width/2
+        self.avatarView.clipsToBounds = true
+//        self.selectionIndicator.bma_rect = layout.selectionIndicatorFrame
 
         if self.accessoryTimestampView.superview != nil {
             let layoutConstants = baseStyle.layoutConstants(viewModel: messageViewModel)
@@ -445,6 +446,9 @@ fileprivate struct Layout {
             yAlignment: parameters.avatarVerticalAlignment
         )
 
+        
+        self.avatarViewFrame.origin.y += 1
+        
         self.selectionIndicatorFrame = selectionIndicatorSize.bma_rect(
             inContainer: containerRect,
             xAlignament: .left,
@@ -462,38 +466,21 @@ fileprivate struct Layout {
         }
 
         currentX += self.selectionIndicatorFrame.maxX
-
-        if isIncoming {
-            currentX += horizontalMargin
-            self.avatarViewFrame.origin.x = currentX
-            currentX += avatarSize.width
-            if isShowingFailedButton {
-                currentX += horizontalInterspacing
-                self.failedButtonFrame.origin.x = currentX
-                currentX += failedButtonSize.width
-                currentX += horizontalInterspacing
-            } else {
-                self.failedButtonFrame.origin.x = currentX - failedButtonSize.width
-                currentX += horizontalInterspacing
-            }
-            self.bubbleViewFrame.origin.x = currentX
+        
+        currentX += horizontalMargin
+        self.avatarViewFrame.origin.x = currentX
+        currentX += avatarSize.width
+        if isShowingFailedButton {
+            currentX += horizontalInterspacing
+            self.failedButtonFrame.origin.x = currentX
+            currentX += failedButtonSize.width
+            currentX += horizontalInterspacing
         } else {
-            currentX = containerRect.maxX - horizontalMargin
-            currentX -= avatarSize.width
-            self.avatarViewFrame.origin.x = currentX
-            if isShowingFailedButton {
-                currentX -= horizontalInterspacing
-                currentX -= failedButtonSize.width
-                self.failedButtonFrame.origin.x = currentX
-                currentX -= horizontalInterspacing
-            } else {
-                self.failedButtonFrame.origin.x = currentX
-                currentX -= horizontalInterspacing
-            }
-            currentX -= bubbleSize.width
-            self.bubbleViewFrame.origin.x = currentX
+            self.failedButtonFrame.origin.x = currentX - failedButtonSize.width
+            currentX += horizontalInterspacing
         }
-
+        self.bubbleViewFrame.origin.x = currentX
+        
         self.size = containerRect.size
         self.preferredMaxWidthForBubble = preferredWidthForBubble
     }
